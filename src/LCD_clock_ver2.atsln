@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "LCD_clock_ver2", "LCD_clock_ver2.cproj", "{8FD281FF-707C-4E95-8084-8049DBEAF3DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FD281FF-707C-4E95-8084-8049DBEAF3DD}.Debug|AVR.ActiveCfg = Debug|AVR
+		{8FD281FF-707C-4E95-8084-8049DBEAF3DD}.Debug|AVR.Build.0 = Debug|AVR
+		{8FD281FF-707C-4E95-8084-8049DBEAF3DD}.Release|AVR.ActiveCfg = Release|AVR
+		{8FD281FF-707C-4E95-8084-8049DBEAF3DD}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
