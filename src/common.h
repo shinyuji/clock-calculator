@@ -2,9 +2,7 @@
  * common.h
  *
  * Created: 2026-07-01 오후 4:28:30
- *  Author: kccistc
- */ 
-
+ */
 
 #ifndef COMMON_H_
 #define COMMON_H_
@@ -43,13 +41,19 @@ typedef struct _Clock{
 	int year;
 } Clock;
 
+typedef enum{
+	CALC_INPUT,		// 수식 입력 중
+	CALC_ERROR,		// 수식 오류
+	CALC_DONE		// 계산 완료
+} CALC_STATE;
+
 typedef struct _Calculator{
 	char inbuff[100];
 	int index;
 	Queue calc_data;
-	
+
 	int result;
-	int error_flag;
+	CALC_STATE state;
 } Calculator;
 
 typedef enum{
@@ -62,7 +66,7 @@ typedef struct _Clock_calculator
 	MODE mode;
 	Calculator my_calc;
 	Clock my_clock;
-	
+
 } Clock_calculator;
 
 #endif /* COMMON_H_ */

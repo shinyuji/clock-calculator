@@ -2,13 +2,11 @@
  * calc.c
  *
  * Created: 2026-06-29 오후 4:15:16
- *  Author: kccistc
- */ 
+ */
 
 #include "calc.h"
-#include "common.h"
 
-void string_calculator(Calculator *calc);	//여기에 구조체 넘기기
+static void string_calculator(Calculator *calc);
 int parsing(char* inbuff, char* postfix);
 int postfix_calculator(char* postfix, int* result);
 void push_num(number_stack* p, int num);
@@ -24,81 +22,73 @@ void init_my_calc(Calculator *calc){
 	init_queue(&(calc->calc_data));
 	memset(calc->inbuff, '\0', STACK_SIZE * sizeof(char));
 	calc->index = 0;
-	calc->error_flag = 0;
+	calc->state = CALC_INPUT;
 }
 
 void calc_processing(Calculator *calc){
 
 	uint8_t key_value;
-	
+
 	//queue에 들어있는 char을 inbuff[]에 저장하다가 '='을 입력받으면 계산 실행
 	if(queue_empty(&(calc->calc_data)) !=TRUE)
 	{
 		key_value = read_queue(&(calc->calc_data));	//queue에 있는 char을 하나 읽어서 받아오기
 
 		// 결과가 나온 상태에서 새로운 키를 누르면 화면 전체 초기화
-		if (calc->error_flag == 1 || calc->error_flag == 2)
+		if (calc->state != CALC_INPUT)
 		{
 			init_my_calc(calc);
 		}
-		
+
 		if (key_value == ' ') {
 			if (calc->index > 0) {
 				calc->index--;						//delete
 				calc->inbuff[calc->index] = '\0';
-				//이거는 uart에 쏘는거고
-				//printf("deleted\n%s",calc->inbuff);	//backspace 적용 후 수식 재출력
 			}
 		}
 		//'='을 입력받으면 계산 실행
 		else if(key_value == '='){
 			calc->inbuff[calc->index] = '\0';
 			string_calculator(calc);
-		}	
+		}
 		else
-		{	
+		{
 			if(calc->index < STACK_SIZE -1)
 				calc->inbuff[calc->index++] = key_value;
 		}
 	}
 }
 
-//문자열 수식을 받아서 결과값 print
-void string_calculator(Calculator *calc)
+//입력된 수식을 계산해 결과 또는 오류 상태 저장
+static void string_calculator(Calculator *calc)
 {
 	char postfix[STACK_SIZE*3];
 	int result;
 
 	//중위표기식 문자열 -> 후위표기식 문자열
 	if (parsing(calc->inbuff, postfix)) {
-		calc->error_flag = 1;
-		//printf("ERROR\n");
+		calc->state = CALC_ERROR;
 		return;
 	}
-	
+
 	//후위표기식 계산기로 계산
 	int cal_error = postfix_calculator(postfix, &result);
 
-	//수식이 정상이면 print result
-	if (cal_error == 0) {
+	if (cal_error == SUCCESS) {
 		calc->result = result;
-		calc->error_flag = 2;
-		//printf("%d\n",result);
+		calc->state = CALC_DONE;
 	}
-	//else print ERROR
-	else 
-	{
-		calc->error_flag = 1;
-		//printf("ERROR\n");
+	else {
+		calc->state = CALC_ERROR;
 	}
-	
+
 }
 
 //중위표기식 문자열 파싱 함수
 int parsing(char* inbuff, char* postfix) {
 
 	if (inbuff[0] == '\n' || inbuff[0] == '\0') return ERR_EMPTY;
-	
+
 	operator_stack op_stack;
 	memset(&op_stack, 0, sizeof(operator_stack));
 	operator_stack* p_stack = &op_stack;
@@ -113,14 +103,14 @@ int parsing(char* inbuff, char* postfix) {
 
 	for (int i = 0; i < len; i++) {
 		char curr_char = inbuff[i];
-		
+
 		if (curr_char == ' ' || curr_char == '\n') continue;
 		if (equal == 1) return ERR_OPERATOR;
 
 		if (is_number(curr_char)) {
-			
+
 			if (pre_char == ')') return ERR_OPERATOR;
-			
+
 			while (i < len && is_number(inbuff[i])) {
 				postfix[pf_i++] = inbuff[i];
 				pre_char = inbuff[i];
@@ -153,12 +143,12 @@ int parsing(char* inbuff, char* postfix) {
 
 		else if (curr_char == ')') {
 			bracket_count--;
-			
+
 			if (bracket_count < 0) return ERR_R_BRACKET;
 			if (pre_char == '(') return ERR_EMPTY_BRACKET;
-			
+
 			if (is_operator(pre_char)) return ERR_OPERATOR;
-			
+
 			while (p_stack->top != EMPTY && p_stack->stack[p_stack->top] != '(') {
 				postfix[pf_i++] = pop_op(p_stack);
 				postfix[pf_i++] = ' ';
@@ -168,16 +158,16 @@ int parsing(char* inbuff, char* postfix) {
 		}
 
 		else if (curr_char == '=') {
-			
+
 			if (is_operator(pre_char)) return ERR_OPERATOR;
-			
+
 			equal = 1;
 			pre_char = curr_char;
 		}
 		else return ERR_INVALID;
 
 	}
-	
+
 	if (bracket_count > 0) return ERR_L_BRACKET;
 
 	while (p_stack->top != EMPTY) {
@@ -188,7 +178,6 @@ int parsing(char* inbuff, char* postfix) {
 
 	return SUCCESS;
 }
-
 
 //후위표기식 문자열 계산기
 int postfix_calculator(char* postfix, int* result) {
@@ -244,8 +233,8 @@ int postfix_calculator(char* postfix, int* result) {
 void push_num(number_stack* p, int num) {
 	if (p->top != STACK_SIZE - 1) {
 		p->top++;							//top + 1
-		p->stack[p->top] = num;											
-	} 
+		p->stack[p->top] = num;
+	}
 }
 int pop_num(number_stack* p) {
 	if (p->top != EMPTY) {

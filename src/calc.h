@@ -2,9 +2,7 @@
  * calc.h
  *
  * Created: 2026-06-29 오후 4:15:27
- *  Author: kccistc
- */ 
-
+ */
 
 #ifndef CALC_H_
 #define CALC_H_
@@ -14,6 +12,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "common.h"
 
 typedef struct {
 	int top;
@@ -35,5 +34,8 @@ enum error_code {
 	ERR_INVALID,
 	ERR_EMPTY
 };
+
+void init_my_calc(Calculator *calc);
+void calc_processing(Calculator *calc);
 
 #endif /* CALC_H_ */

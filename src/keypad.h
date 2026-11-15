@@ -2,8 +2,7 @@
  * keypad.h
  *
  * Created: 2026-06-29 오후 2:11:08
- *  Author: kccistc
- */ 
+ */
 
 #ifndef KEYPAD_H_
 #define KEYPAD_H_
@@ -17,7 +16,7 @@
 #define KEYPAD_PIN PINA
 #define KEYPAD_PORT PORTA
 
-
-
+void init_keypad(void);
+uint8_t keypad_scan(void);
 
 #endif /* KEYPAD_H_ */

@@ -2,8 +2,7 @@
  * lcd.h
  *
  * Created: 2026-07-01 오후 3:01:05
- *  Author: kccistc
- */ 
+ */
 
 #ifndef LCD_H_
 #define LCD_H_
@@ -12,15 +11,14 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-// 데이터 버스를 PORTA로 변경 (ISP 통신 간섭 해결)
+// 데이터: PORTB 상위 4bit (PB7~PB4), 제어: PORTC (RS, RW, E)
 #define PORT_DATA		PORTB
 #define PORT_CONTROL	PORTC
-#define DDR_DATA		DDRB	
+#define DDR_DATA		DDRB
 #define DDR_CONTROL		DDRC
 #define RS_PIN			0
 #define RW_PIN			1
 #define E_PIN			2
-
 
 //텍스트 LCD 모듈의 명령어
 #define COMMAND_CLEAR_DISPLAY	0x01	//공백 문자로 화면을 지우고 커서를 홈 위치(주소 0번)로 이동시킨다.
@@ -76,6 +74,11 @@ S:	I/D 값에 따라 디스플레이를 왼쪽 또는 오른쪽으로 옮김. (�
 
 */
 
+#include "common.h"
 
+extern volatile uint8_t lcd_update_flag;	// 화면을 다시 그려야 할 때 set
+
+void init_lcd(void);
+void lcd_processing(Clock_calculator *clk_cal);
 
 #endif /* LCD_H_ */

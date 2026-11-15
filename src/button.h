@@ -2,15 +2,17 @@
  * button.h
  *
  * Created: 2026-06-10 오전 11:45:01
- *  Author: user
- */ 
+ */
+
+#ifndef BUTTON_H_
+#define BUTTON_H_
 
 #define F_CPU 16000000UL  //16MHz
-#include <avr/io.h>  // PORTA PORTB PORTD... IO관련 reg가 들어 있다. 
-#include <util/delay.h>  // _delay_ms _delay_us 등 
+#include <avr/io.h>  // PORTA PORTB PORTD... IO관련 reg가 들어 있다.
+#include <util/delay.h>  // _delay_ms _delay_us 등
 
 #define  BUTTON_DDR  DDRD
-#define  BUTTON_PIN  PIND   // PORTD를 읽는 register 5v:1  0v:0 
+#define  BUTTON_PIN  PIND   // PORTD를 읽는 register 5v:1  0v:0
 
 #define  BUTTON0PIN 2    // PORTD.2
 #define  BUTTON1PIN 3    // PORTD.3
@@ -24,7 +26,14 @@
 #define  BUTTON3   3   // PORTD.5의 가상 index (sw번호)
 #define  BUTTON4   4   // PORTD.6의 가상 index (sw번호)
 
-#define  BUTTON_NUMBER  5   // 버튼 갯수 
+#define  BUTTON_NUMBER  5   // 버튼 갯수
 
 #define  BUTTON_PRESS  1      // 버튼을 누르면 high (active-high)
 #define  BUTTON_RELEASE 0     // 버튼을 뗀 상태 (low)
+
+#include "common.h"
+
+void init_button(void);
+void button_processing(Clock_calculator *clk_cal);
+
+#endif /* BUTTON_H_ */
